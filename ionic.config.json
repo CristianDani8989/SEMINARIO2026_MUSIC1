@@ -1,0 +1,7 @@
+{
+  "name": "MUSICCG_UPCA",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
