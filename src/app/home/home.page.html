@@ -1,20 +1,55 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
+      <ion-title size="large">home  </ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+<swiper-container
+[pagination]="true"
+[loop]="true"   
+[slides-per-view]="1"
+>
+<swiper-slide *ngFor="let genre of genres">
+    <div class="slide-content" [style.background-color]="temaActual">
+      <h2> {{ genre.title }} </h2>
+      <img [src]="genre.image" [alt]="genre.title">
+      <p> {{ genre.description }} </p>
+      <ion-button (click)="cambiarTema()">
+        cambiar de tema
+      </ion-button>
+    </div>
+  </swiper-slide>
+</swiper-container>
+<div [style.background-color]="colorActual">
+   hola mundo
+</div>
+<ion-button (click)="cambiarColor()">
+  cambia de tema
+</ion-button>
+<ion-card class="bg-card-test">
+  <ion-card-header>
+    <ion-card-title>Card Title</ion-card-title>
+    <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-card-content>
+    Here's a small text description for the card content. Nothing more, nothing less.
+  </ion-card-content>
+</ion-card>
+
+<!-- Demo de storage -->
+ <div>
+   <h3> Demo storage </h3>
+     <div [style.background-color] = "colorActual" class="">
+       <p> tema actual: {{ colorActual === colorOscuro ? 'oscuro' : 'claro' }}</p>
+     </div>
+ </div>
+
+  <div>
+     <ion-button (click)="cambiarColor()">
+      Cambiar tema y guardar
+     </ion-button>
   </div>
-</ion-content>
+ </ion-content>
+ 
