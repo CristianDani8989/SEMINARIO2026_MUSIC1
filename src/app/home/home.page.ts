@@ -24,6 +24,8 @@ export class HomePage implements OnInit {
   //estados actuales
   colorActual = this.colorOscuro;
   temaActual = this.colorSlideTitle;
+
+  
   //[actividad 1 (lista)] 
   //[actividad 2 (lista)]
   genres =  [
