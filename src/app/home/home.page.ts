@@ -4,7 +4,7 @@ import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/stan
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';  
 import { CommonModule } from '@angular/common';
 import { StorageService } from '../services/storage';
-
+import { Router } from '@angular/router'; 
 
 @Component({
   selector: 'app-home',
@@ -25,7 +25,7 @@ export class HomePage implements OnInit {
   colorActual = this.colorOscuro;
   temaActual = this.colorSlideTitle;
 
-  
+
   //[actividad 1 (lista)] 
   //[actividad 2 (lista)]
   genres =  [
@@ -45,11 +45,13 @@ export class HomePage implements OnInit {
       description: "La música balada es un género narrativo lento y melódico, con raíces en poemas medievales que contaban historias, evolucionando en la música popular a canciones románticas sobre amor y desamor, caracterizadas por ritmos suaves, letras emotivas y una estructura lírica que a menudo usa estribillos repetitivos para enfatizar emociones profundas y crear conexión con el oyente."
     },
   ]
-  constructor(private storageService: StorageService) {}
+  constructor(
+    private storageService: StorageService,
+    private router: Router) {}
 
   async ngOnInit(){
     await this.loadStorageData();
- 
+    this.simularCargaDatos(); 
   }
 
   async cambiarColor() {
@@ -73,4 +75,24 @@ async loadStorageData(){
     this.colorActual = savedTheme
    }
 }
+
+async simularCargaDatos() {
+  const data = await this.obtenerDatoSimulados();
+  console.log('Datos simulados: ', data)
 }
+
+obtenerDatoSimulados(){
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve (['Rock', 'Vallenato', 'Trap'])
+    }, 1500)
+  })
+}
+
+// Crear una funcion para ir a ver la intro se va a conectar con una funcion que debemos agregar en el html y al hacer click ejecute esta funcion para llevarme  a ver la intro  [LISTA]
+verIntro() {
+    this.router.navigateByUrl('/intro');
+  }
+}
+
+
