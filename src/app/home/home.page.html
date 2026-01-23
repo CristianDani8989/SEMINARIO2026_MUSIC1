@@ -11,60 +11,18 @@
 
  <ion-content>
   <swiper-container
-[pagination]="true"
-[loop]="true"   
-[slides-per-view]="1"
+pagination="true"
+loop="true"   
+slides-per-view="3"
 >
-<swiper-slide *ngFor="let genre of genres">
-    <div class="slide-content" [style.background-color]="temaActual">
-      <h2> {{ genre.title }} </h2>
-      <img [src]="genre.image" [alt]="genre.title">
-      <p> {{ genre.description }} </p>
-      <ion-button (click)="cambiarTema()">
-        cambiar de tema
-      </ion-button>
+<swiper-slide *ngFor="let album of albums">
+    <div class="slide-content">
+      <img [src]="album.image"/>
+      <p> {{ album.name }} </p>
     </div>
   </swiper-slide>
 </swiper-container>
-<div [style.background-color]="colorActual">
-   hola mundo
-</div>
-<ion-button (click)="cambiarColor()">
-  cambia de tema
-</ion-button>
-<ion-card class="bg-card-test">
-  <ion-card-header>
-    <ion-card-title>Card Title</ion-card-title>
-    <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
-  </ion-card-header>
 
-  <ion-card-content>
-    Here's a small text description for the card content. Nothing more, nothing less.
-  </ion-card-content>
-</ion-card>
-
-<!-- Demo de storage -->
- <div>
-   <h3> Demo storage </h3>
-     <div [style.background-color] = "colorActual" class="">
-       <p> tema actual: {{ colorActual === colorOscuro ? 'oscuro' : 'claro' }}</p>
-     </div>
- </div>
-
-  <div>
-     <ion-button (click)="cambiarColor()">
-      Cambiar tema y guardar
-     </ion-button>
-     <ion-button (click)="verIntro()">
-      Ver Intro
-     </ion-button>
-  </div>
-
-  <div>
-   <p class="ion-text-center">Texto centrado</p> 
-   <p class="ion-text-left">Texto a la izquierda</p> 
-   <p class="ion-text-right">Texto a la derecha</p> 
-  </div>
  </ion-content>
 
 

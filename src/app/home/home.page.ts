@@ -5,6 +5,8 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StorageService } from '../services/storage';
 import { Router } from '@angular/router'; 
+import { MusicService } from '../services/music';
+import { albums } from 'ionicons/icons';
 
 @Component({
   selector: 'app-home',
@@ -45,14 +47,33 @@ export class HomePage implements OnInit {
       description: "La música balada es un género narrativo lento y melódico, con raíces en poemas medievales que contaban historias, evolucionando en la música popular a canciones románticas sobre amor y desamor, caracterizadas por ritmos suaves, letras emotivas y una estructura lírica que a menudo usa estribillos repetitivos para enfatizar emociones profundas y crear conexión con el oyente."
     },
   ]
+  tracks: any;
+  albums: any;
+
   constructor(
-    private storageService: StorageService,
+    private storageService: StorageService, private musicService: MusicService,
     private router: Router) {}
 
   async ngOnInit(){
+    this.loadAlbums();
+    this.loadTracks();
     await this.loadStorageData();
     this.simularCargaDatos(); 
   }
+
+  loadTracks(){
+    this.musicService.getTracks().then(tracks =>{
+      this.tracks = tracks;
+      console.log(this.tracks, "las canciones")
+    })
+  }
+  loadAlbums(){
+    this.musicService.getAlmbuns().then(albums =>{
+      this.albums = albums;
+      console.log(this.albums, "los albums")
+    })
+  }
+
 
   async cambiarColor() {
     //if ternario
