@@ -1,11 +1,16 @@
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+  <ion-header>
     <ion-toolbar>
-      <ion-title size="large">home  </ion-title>
+      <ion-title> 
+        Home  
+      </ion-title>
+      <ion-buttons slot="end">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
-<swiper-container
+ <ion-content>
+  <swiper-container
 [pagination]="true"
 [loop]="true"   
 [slides-per-view]="1"

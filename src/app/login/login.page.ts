@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { IonicModule, NavController } from '@ionic/angular';
 import { AuthService } from '../services/auth'
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -41,19 +42,19 @@ export class LoginPage implements OnInit {
 
   }
 
-  constructor( private formBluider: FormBuilder, private AuthService: AuthService, private navCtrl: NavController ) {
+  constructor( private formBluider: FormBuilder, private AuthService: AuthService, private navCtrl: NavController, private router: Router ) { 
     this.loginForm = this.formBluider.group({
       email: new FormControl(
         '',
         Validators.compose([
-          Validators.required, // campo obligatorio
-          Validators.email // valida el correo 
+          Validators.required,
+          Validators.email
         ])
       ),
         password: new FormControl(
         '',
         Validators.compose([
-          Validators.required, // campo obligatorio
+          Validators.required,
           Validators.minLength(6)
         ])
     )  
@@ -67,11 +68,13 @@ export class LoginPage implements OnInit {
     console.log(credentials)
     this.AuthService.loginUser(credentials).then(res =>{
       this.errorMessage = "";
-      this.navCtrl.navigateForward("/home")
+      this.navCtrl.navigateForward("/menu/home") 
     }).catch(error => {
       this.errorMessage = error;
     })
     }
+
+  goToRegister() {
+    this.navCtrl.navigateForward('/register');
   }
-
-
+}

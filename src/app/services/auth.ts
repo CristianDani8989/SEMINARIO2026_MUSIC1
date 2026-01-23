@@ -21,11 +21,12 @@ export class AuthService {
     });
   }
 
-  // 🔧 CAMBIO: se agrega el método register que NO existía
   register(userData: any) {
     return {
       subscribe: ({ next, error }: any) => {
         if (userData.email && userData.password) {
+
+          localStorage.setItem('user',JSON.stringify(userData));
           next({
             success: true,
             message: 'Usuario registrado correctamente'

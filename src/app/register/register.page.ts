@@ -14,10 +14,10 @@ import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-register',
-  standalone: true, // 🔧 CAMBIO CLAVE
+  standalone: true, 
   imports: [
     CommonModule,
-    IonicModule,            // 🔧 CAMBIO CLAVE (ESTO SOLUCIONA TODO)
+    IonicModule,            
     ReactiveFormsModule
   ],
   templateUrl: './register.page.html',

@@ -1,61 +1,56 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
+
 @Injectable({
   providedIn: 'root',
 })
 export class StorageService {
   private _storage: Storage | null = null;
   constructor (private storage: Storage) {
-
     this.init();
   }
 
-    
-   async init() {
-     const storage =  await this.storage.create();
-     this._storage = storage
-   }
+  async init() {
+    const storage =  await this.storage.create();
+    this._storage = storage
+  }
 
-
-   private async ready() {
+  private async ready() {
     if (!this._storage){
       await this.init();
     }
-   }
+  }
 
-   // con esto se puede setear datos en el storage 
-   public async set(key: string, value: any) {
+  // con esto se puede setear datos en el storage 
+  public async set(key: string, value: any) {
     await this.ready();
-     return this._storage?.set(key, value);
-   }
+    return this._storage?.set(key, value);
+  }
 
-
-   // obtener datos del storage
-   public async get(key: string){
+  // obtener datos del storage
+  public async get(key: string){
     await this.ready();
     return this._storage?.get(key);
-   }
+  }
 
-     public async remove(key: string){
+  public async remove(key: string){
     await this.ready();
     return this._storage?.remove(key);
-   }
+  }
 
-     public async clear(){
+  public async clear(){
     await this.ready();
     return this._storage?.clear();
-   }
+  }
 
-     public async keys(){
+  public async keys(){
     await this.ready();
     return this._storage?.keys();
-   }
+  }
 
-     public async length(){
+  public async length(){
     await this.ready();
     return this._storage?.length();
-   }
-
-
   }
+}
 

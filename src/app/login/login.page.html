@@ -37,6 +37,12 @@
   <ion-button expand="full" shape="round" color="success" [disabled]="!loginForm.valid" type="submit">
       Login
   </ion-button>
+  <ion-button
+  expand="full"
+  fill="outline"
+  color="primary"
+  (click)="goToRegister()"> Crear cuenta
+</ion-button>
   </form>
   {{errorMessage}}
 </ion-content>
