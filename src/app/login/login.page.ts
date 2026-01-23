@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
-
+import { IonicModule, NavController } from '@ionic/angular';
+import { AuthService } from '../services/auth'
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -11,8 +11,11 @@ import { IonicModule } from '@ionic/angular';
   imports: [CommonModule, FormsModule, IonicModule, ReactiveFormsModule]
 })
 export class LoginPage implements OnInit {
-
+  // [TAREA] crear un nuevo guard para cuando intente entrar al home validar si estoy logueada si no redireccionar a login [LISTA]
   loginForm: FormGroup;
+
+
+  errorMessage: string = "";
 
   // [TAREA] añadir los validation_message para password [LISTA]
 
@@ -38,7 +41,7 @@ export class LoginPage implements OnInit {
 
   }
 
-  constructor( private formBluider: FormBuilder) {
+  constructor( private formBluider: FormBuilder, private AuthService: AuthService, private navCtrl: NavController ) {
     this.loginForm = this.formBluider.group({
       email: new FormControl(
         '',
@@ -62,6 +65,13 @@ export class LoginPage implements OnInit {
 
   loginUser(credentials: any){
     console.log(credentials)
+    this.AuthService.loginUser(credentials).then(res =>{
+      this.errorMessage = "";
+      this.navCtrl.navigateForward("/home")
+    }).catch(error => {
+      this.errorMessage = error;
+    })
+    }
   }
 
-}
+

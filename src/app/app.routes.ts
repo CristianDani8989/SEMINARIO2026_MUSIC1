@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { IntroGuard } from './guards/intro-guard';
-
+// [TAREA] agregar el guard de o
 export const routes: Routes = [
   {
     path: 'home',
@@ -19,4 +19,9 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./login/login.page').then( m => m.LoginPage)
   },
+  {
+  path: 'register',
+  loadComponent: () =>
+    import('./register/register.page').then(m => m.RegisterPage)
+}
 ];
