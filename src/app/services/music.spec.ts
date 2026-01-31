@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Music } from './music';
+import { MusicService } from './music';
 
 describe('Music', () => {
   let service: Music;

@@ -19,4 +19,10 @@ export class MusicService {
        response => response.json()
      );
   }
+
+  getSongsByAlbum(albumId: string){
+  return  fetch(`${this.urlServer}/tracks/album/${albumId}`).then(
+      response => response.json()
+    );
+  }
 }
