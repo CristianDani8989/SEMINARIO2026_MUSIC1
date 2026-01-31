@@ -61,10 +61,9 @@ export class IntroPage implements OnInit {
 
   goBack() {
 
-    this.storageService.set('introVisto', true);
+    this.storageService.set('intro', true);
 
-    console.log ("vovler")
-    this.router.navigateByUrl('/home');
+    this.router.navigateByUrl('/menu/home');
 
     // al volver atras o volver al home guardar en el storage que ya estuve o vi la pagina de intro [LISTA]
   }
