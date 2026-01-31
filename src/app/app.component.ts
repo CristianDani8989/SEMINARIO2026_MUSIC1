@@ -13,15 +13,7 @@ register ();
 export class AppComponent implements OnInit {
   constructor(private storageService: StorageService) {}
   async ngOnInit() {
-    this.storageService.clear();
-    const user = {
-      nombre: 'Cristian',
-      apellido: 'Admin',
-      email: 'cristian@admin.com',
-      password: '123456',
-      intro: false
-    };
-    await this.storageService.set('user', user);
+
     await this.storageService.remove('intro');
     await this.storageService.set('login', false);
 

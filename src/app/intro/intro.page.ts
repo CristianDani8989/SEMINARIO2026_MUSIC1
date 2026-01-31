@@ -31,11 +31,6 @@ export class IntroPage implements OnInit {
       description: 'Bienvenido a la app de musica 2026 con las mejores canciones de los mejores artistas.'
     },
     {
-      title: 'A tu gusto',
-      image: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/...',
-      description: 'Crea o guarda con la mejor calidad tus playList para poder escuchar en cualquier momento y en cualquier lugar.'
-    },
-    {
       title: 'Configura',
       image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKm5mNp4fr0Cg_c0PpfrSnBiG51AunJ4V0vw&s',
       description: 'Todo a tu gusto y medida.'
@@ -50,7 +45,7 @@ export class IntroPage implements OnInit {
   constructor(
     private storageService: StorageService,
     private router: Router
-  ) {}
+  ) { }
 
   async ngOnInit() {
     const theme = await this.storageService.get('theme');

@@ -1,0 +1,16 @@
+
+<ion-content >
+  <ion-header>
+    <ion-toolbar>
+      <ion-title class="ion-text-center">Songs Modal</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-item class="ion-margin" *ngFor="let song of songs; let i = index" (click)="selectSong(song)">
+    <ion-thumbnail slot="start">
+      <ion-icon class="musical-notes" name="musical-notes"></ion-icon>
+    </ion-thumbnail>
+    <ion-label>
+      <h3>{{ song.name }}</h3>
+    </ion-label>
+  </ion-item>
+</ion-content>

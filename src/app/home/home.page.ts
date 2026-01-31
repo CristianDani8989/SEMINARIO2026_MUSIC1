@@ -1,18 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
-import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';  
 import { CommonModule } from '@angular/common';
 import { StorageService } from '../services/storage';
 import { Router } from '@angular/router'; 
+import { ModalController } from '@ionic/angular';
+
+
 import { MusicService } from '../services/music';
-import { albums } from 'ionicons/icons';
+import { SongsModalPage } from '../songs-modal/songs-modal.page';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, CommonModule ],
+  imports: [IonicModule, CommonModule, NgIf],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 
@@ -26,7 +29,16 @@ export class HomePage implements OnInit {
   //estados actuales
   colorActual = this.colorOscuro;
   temaActual = this.colorSlideTitle;
-
+  Song:any = {};
+  songSelected:any = {
+    name: '',
+    preview_url: '',
+    duration_ms: null,
+    playing:false
+  };
+  elapsedMs:number = 0;
+  progressValue:number = 0;
+  loaded: boolean = false;
 
   //[actividad 1 (lista)] 
   //[actividad 2 (lista)]
@@ -51,12 +63,16 @@ export class HomePage implements OnInit {
   albums: any;
 
   constructor(
-    private storageService: StorageService, private musicService: MusicService,
-    private router: Router) {}
+    private modalController: ModalController,
+    private musicService: MusicService,
+    private storageService: StorageService,
+    private router: Router
+  ) {}
 
   async ngOnInit(){
     this.loadAlbums();
     this.loadTracks();
+    this.loaded = true;
     await this.loadStorageData();
     this.simularCargaDatos(); 
   }
@@ -84,11 +100,11 @@ export class HomePage implements OnInit {
 
   }
   cambiarTema() {
-  this.temaActual =
-    this.temaActual === this.colorSlideTitle
-      ? this.colorSlideTexto
-      : this.colorSlideTitle;
-}
+    this.temaActual =
+      this.temaActual === this.colorSlideTitle
+        ? this.colorSlideTexto
+        : this.colorSlideTitle;
+  }
 
 async loadStorageData(){
    const savedTheme = await this.storageService.get('Theme')
@@ -113,6 +129,66 @@ obtenerDatoSimulados(){
 // Crear una funcion para ir a ver la intro se va a conectar con una funcion que debemos agregar en el html y al hacer click ejecute esta funcion para llevarme  a ver la intro  [LISTA]
 verIntro() {
     this.router.navigateByUrl('menu/intro');
+}
+
+async loadSongsByAlbum(albumId: string){
+  const songs = await this.musicService.getSongsByAlbum(albumId);
+  const modal = await this.modalController.create({
+    component: SongsModalPage,
+    componentProps: {
+      songs: songs,
+    },
+  });
+  modal.onDidDismiss().then((result) => {
+    if(result.data){
+      this.songSelected = result.data;
+    }
+  });
+  modal.present();
+}
+
+  play(){
+    try { if (this.Song && this.Song.pause) { this.Song.pause(); } } catch(e){}
+
+    this.Song = new Audio(this.songSelected.preview_url);
+
+    this.Song.addEventListener('timeupdate', () => {
+      const current = this.Song.currentTime || 0; // seconds
+      const duration = this.Song.duration || 0; // seconds
+      this.elapsedMs = Math.floor(current * 1000);
+      this.progressValue = duration > 0 ? (current / duration) : 0;
+    });
+
+    this.Song.addEventListener('ended', () => {
+      this.songSelected.playing = false;
+      this.progressValue = 0;
+      this.elapsedMs = 0;
+    });
+
+    this.Song.play();
+    this.songSelected.playing = true;
+  }
+
+  pause(){
+    if (this.Song && this.Song.pause) {
+      this.Song.pause();
+    }
+    this.songSelected.playing = false;
+  }
+
+  getRemainngTime(){
+    if (!this.Song.duration || !this.Song.currentTime) {
+      return '0:00';
+    }
+    const remainingTime = this.Song.duration - this.Song.currentTime;
+    return this.formatDuration(remainingTime * 1000);
+  }
+
+  formatDuration(durationMs: number): string {
+    const totalSeconds = Math.floor(durationMs / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   }
 }
 

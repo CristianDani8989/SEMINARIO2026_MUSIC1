@@ -1,33 +1,55 @@
+
+.my-custom-swiper{
+  margin: 0px;
+  padding: 0px;
+  margin-top: 60px;
+}         
+
 .slide-content {
-  text-align: center;
-  padding: 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 15px;
+  color: white;
+  margin: 2px;
+  padding: 5px;
+  ion-card-title{
+    font-size: 0.8em;
+    text-align: start;
+    margin-top: 10px;
+    font-weight: bold;
+    padding: 0px;
+    margin: 0px;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+  .card-content{
+    font-size: 0.8em; 
+    text-align: justify;
+    padding: 5px;
+    margin: 0px;
+  }
+
+  ion-chip{
+    font-size: 0.7em;
+    margin: 2px;
+    padding: 2px;
+  }
 }
 
-.slide-content img {
+
+
+
+
+.slide-image {
   width: 100%;
-  max-width: 300px;
   height: auto;
-  border-radius: 10px;
-  margin: 10% 0;
-}
+  border-radius: 15px;
+  margin: 0px;
 
-.slide-content h2 {
-  margin: 0;
-  font-size: 25px;
-  color: #fbff00;
 }
-
-.slide-content p {
-  font-size: 20px;
-  color: aliceblue;
-  text-align: justify;
-}
-
-.card {
-  padding: var(--espaciado-grande);
-  background-color: var(--color-claro);
-}
-
-.bg-card-test {
-  background: #650f5e;  
+.slide-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 15px;
 }
