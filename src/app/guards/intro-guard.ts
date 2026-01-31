@@ -14,13 +14,13 @@ export class IntroGuard implements CanActivate {
 
   async canActivate(): Promise<boolean> {
 
-    const introVista = await this.storageService.get('intro_vista');
+    const introVista = await this.storageService.get('intro');
 
     if (introVista === true) {
       return true; // deja pasar al home
     }
 
-    this.router.navigateByUrl('/intro'); // redirige a intro
+    this.router.navigateByUrl('menu/intro'); // redirige a intro
     return false;
   }
 }

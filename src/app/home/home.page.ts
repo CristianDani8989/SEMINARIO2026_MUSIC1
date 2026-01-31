@@ -112,7 +112,7 @@ obtenerDatoSimulados(){
 
 // Crear una funcion para ir a ver la intro se va a conectar con una funcion que debemos agregar en el html y al hacer click ejecute esta funcion para llevarme  a ver la intro  [LISTA]
 verIntro() {
-    this.router.navigateByUrl('/intro');
+    this.router.navigateByUrl('menu/intro');
   }
 }
 
