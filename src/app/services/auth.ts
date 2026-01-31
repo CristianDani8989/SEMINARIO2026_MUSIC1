@@ -1,19 +1,27 @@
 import { Injectable } from '@angular/core';
+import { StorageService } from './storage';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
 
-  constructor() {}
+  constructor(private storageService: StorageService) {}
 
-  loginUser(credentials: any) {
-    return new Promise((accept, reject) => {
-      if (
-        credentials.email === 'guzmandani503@gmail.com' &&
-        credentials.password === '123456'
-      ) {
-        localStorage.setItem('login', 'true');
+  async searchUser(credentials: any): Promise<{ login: boolean; intro: boolean } | null> {
+    const user = await this.storageService.get('user');
+    if (user && user.email === credentials.email && user.password === credentials.password) {
+      return { login: true, intro: user.intro };
+    }
+    return null;
+  }
+
+  async loginUser(credentials: any) {
+    return new Promise(async (accept, reject) => {
+      const result = await this.searchUser(credentials);
+      if (result) {
+        await this.storageService.set('login', result.login);
+        await this.storageService.set('intro', result.intro);
         accept('login correcto');
       } else {
         reject('login incorrecto');
@@ -23,10 +31,12 @@ export class AuthService {
 
   register(userData: any) {
     return {
-      subscribe: ({ next, error }: any) => {
+      subscribe: async ({ next, error }: any) => {
         if (userData.email && userData.password) {
 
-          localStorage.setItem('user',JSON.stringify(userData));
+          const user = { ...userData, intro: false };
+          await this.storageService.set('user', user);
+          await this.storageService.set('intro', false);
           next({
             success: true,
             message: 'Usuario registrado correctamente'
@@ -34,7 +44,7 @@ export class AuthService {
         } else {
           next({
             success: false,
-            message: 'Datos inválidos'
+            message: 'Datos inválidos: ' + error
           });
         }
       }
