@@ -1,195 +1,177 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';  
+import { IonicModule, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { StorageService } from '../services/storage';
-import { Router } from '@angular/router'; 
-import { ModalController } from '@ionic/angular';
-
-
-import { MusicService } from '../services/music';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { StorageService } from 'src/app/services/storage';
+import { Router } from '@angular/router';
+import { MusicService } from 'src/app/services/music';
 import { SongsModalPage } from '../songs-modal/songs-modal.page';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [IonicModule, CommonModule, NgIf],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  imports: [IonicModule, CommonModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
+export class HomePage implements OnInit { 
 
-export class HomePage implements OnInit {
-  //color base
-  colorClaro = 'var(--color-claro)';
-  colorOscuro = 'var(--color-oscuro)';
-  //colores del slide
-  colorSlideTitle = 'var(--color-slide-title)';
-  colorSlideTexto = 'var(--color-texto-slide)';
-  //estados actuales
-  colorActual = this.colorOscuro;
-  temaActual = this.colorSlideTitle;
-  Song:any = {};
-  songSelected:any = {
-    name: '',
-    preview_url: '',
-    duration_ms: null,
-    playing:false
-  };
-  elapsedMs:number = 0;
-  progressValue:number = 0;
-  loaded: boolean = false;
-
-  //[actividad 1 (lista)] 
-  //[actividad 2 (lista)]
-  genres =  [
-    {
-      title: "Musica vallenato",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTu9qZuxaQK69BctFFKx0XSvw2jhbdCyqg5Lw&s",
-      description: "El vallenato es un género musical folclórico colombiano de la Costa Caribe, caracterizado por el sonido del acordeón, la caja y la guacharaca, interpretando ritmos como el paseo, merengue, son y puya, con letras que narran historias, amores y la vida cotidiana, y fue declarado Patrimonio Cultural Inmaterial por la UNESCO."
-    },
-    {
-      title: "Musica salsera",
-      image: "https://play-lh.googleusercontent.com/IELnWTlnM7jl14-vjJx5oOa9KF7MCn5eSXZWqlu7SBpUWHgdpoe6LuuN6OqpqaN0GgM",
-      description: "La salsa es un género musical vibrante y rítmico, nacido en Nueva York con raíces profundas en los ritmos afrocaribeños cubanos (son, mambo, chachachá, rumba) y puertorriqueños (bomba, plena), fusionado con jazz y otros estilos latinoamericanos, caracterizado por su fuerte percusión (clave, congas, timbales) y letras que reflejan la vida latina, el amor, la lucha y la identidad cultural, creada para bailar y celebrar la herencia cultural."
-    },
-    {
-      title: "Musica baladas",
-      image: "https://s3.amazonaws.com/eventtia/event_files/45247/large/balada1920x102416022749881602274988.jpg?1602274987",
-      description: "La música balada es un género narrativo lento y melódico, con raíces en poemas medievales que contaban historias, evolucionando en la música popular a canciones románticas sobre amor y desamor, caracterizadas por ritmos suaves, letras emotivas y una estructura lírica que a menudo usa estribillos repetitivos para enfatizar emociones profundas y crear conexión con el oyente."
-    },
-  ]
+  rotate = 0;
+  modoOscuro = false;
   tracks: any;
   albums: any;
+  artists: any;
+  song: any={
+    name: '',
+    preview_url: '',
+    playing: false
+  };
+  currentSong: any;
+  newTime: any;
+  liked: boolean = false;
+  favorites: any;
+  secciones: any[] = [];
 
-  constructor(
-    private modalController: ModalController,
-    private musicService: MusicService,
-    private storageService: StorageService,
-    private router: Router
-  ) {}
+  constructor(private storageServcie: StorageService, private router: Router, private musicService: MusicService, private modalController: ModalController) {}
 
-  async ngOnInit(){
-    this.loadAlbums();
-    this.loadTracks();
-    this.loaded = true;
+  async ngOnInit() {
     await this.loadStorageData();
-    this.simularCargaDatos(); 
+    await this.loadTraks();
+    await this.loadAlbums();
+    await this.loadArtists();
+    this.secciones = [
+    {
+      titulo: 'Álbumes',
+      icono: 'library-outline',
+      tipo: 'Álbum',
+      items: this.albums,
+      accion: (id: string) => this.showSongs(id)
+    },
+    {
+      titulo: 'Artistas',
+      icono: 'person-outline',
+      tipo: 'Artista',
+      items: this.artists,
+      accion: (id: string) => this.showSongsByArtists(id)
+    },
+  ];
+
   }
 
-  loadTracks(){
-    this.musicService.getTracks().then(tracks =>{
-      this.tracks = tracks;
-      console.log(this.tracks, "las canciones")
-    })
-  }
-  loadAlbums(){
-    this.musicService.getAlmbuns().then(albums =>{
-      this.albums = albums;
-      console.log(this.albums, "los albums")
-    })
+  async loadTraks() {
+    this.musicService.getTraks().then((tracks) => {
+      this.tracks =  tracks;
+      console.log('Tracks loaded:', this.tracks);
+    }).catch((error) => {
+      console.error('Error loading tracks:', error);
+    });
   }
 
+  async loadAlbums() {
+    this.musicService.getAlbums().then((albums) => {
+      this.albums =  albums;
+    }).catch((error) => {
+      console.error('Error loading tracks:', error);
+    });
+  }
+
+  async loadArtists() {
+    this.musicService.getArtists().then((artists) => {
+      this.artists =  artists;
+      console.log('Artists loaded:', this.artists);
+    }).catch((error) => {
+      console.error('Error loading artists:', error);
+    });
+  }
+
+  async showSongs(albumId: string) {
+    console.log('Album ID:', albumId);
+    const songs = await this.musicService.getSongsByAlbum(albumId);
+    console.log('Songs for album:', songs);
+    const modal = await this.modalController.create({
+      component: SongsModalPage,
+      componentProps: {
+        songs: songs,
+      } ,
+    });
+    modal.onDidDismiss().then((result) => {
+      if(result.data){
+        console.log("cancion recibida ", result.data);
+        this.song = result.data;
+      }
+    })
+    await modal.present();
+  }
+
+  async showSongsByArtists(songId: string) {
+    const song = await this.musicService.getSongsByArtists(songId);
+    const modal = await this.modalController.create({
+      component: SongsModalPage,
+      componentProps: {
+        songs: song,
+      },
+    });
+    modal.onDidDismiss().then((result) => {
+      if(result.data){
+        console.log("cancion recibida ", result.data);
+        this.song = result.data;
+      }
+    })
+    await modal.present();
+  }
 
   async cambiarColor() {
-    //if ternario
-   this.colorActual = this.colorActual === this.colorOscuro ? this.colorClaro : this.colorOscuro
-   await this.storageService.set('theme', this.colorActual)
-   console.log('tema Guardado:', this.colorActual )
+    this.modoOscuro = !this.modoOscuro;
+    this.rotate = this.modoOscuro ? 180 : 0;
 
+    document.body.classList.toggle('dark-mode', this.modoOscuro);
 
-  }
-  cambiarTema() {
-    this.temaActual =
-      this.temaActual === this.colorSlideTitle
-        ? this.colorSlideTexto
-        : this.colorSlideTitle;
+    await this.storageServcie.set('theme', this.modoOscuro ? 'dark' : 'light');
+    console.log('Tema Guardado: ', this.modoOscuro ? 'dark' : 'light');
   }
 
-async loadStorageData(){
-   const savedTheme = await this.storageService.get('Theme')
-   if (savedTheme) {
-    this.colorActual = savedTheme
-   }
-}
-
-async simularCargaDatos() {
-  const data = await this.obtenerDatoSimulados();
-  console.log('Datos simulados: ', data)
-}
-
-obtenerDatoSimulados(){
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve (['Rock', 'Vallenato', 'Trap'])
-    }, 1500)
-  })
-}
-
-// Crear una funcion para ir a ver la intro se va a conectar con una funcion que debemos agregar en el html y al hacer click ejecute esta funcion para llevarme  a ver la intro  [LISTA]
-verIntro() {
-    this.router.navigateByUrl('menu/intro');
-}
-
-async loadSongsByAlbum(albumId: string){
-  const songs = await this.musicService.getSongsByAlbum(albumId);
-  const modal = await this.modalController.create({
-    component: SongsModalPage,
-    componentProps: {
-      songs: songs,
-    },
-  });
-  modal.onDidDismiss().then((result) => {
-    if(result.data){
-      this.songSelected = result.data;
+  async loadStorageData() {
+    const savedTheme = await this.storageServcie.get('theme');
+    if (savedTheme) {
+      this.modoOscuro = savedTheme === 'dark';
+      this.rotate = this.modoOscuro ? 180 : 0;
+      document.body.classList.toggle('dark-mode', this.modoOscuro);
     }
-  });
-  modal.present();
-}
+  }
+
+  goInto() {
+    console.log('Volver');
+    this.router.navigateByUrl('/intro');
+    this.storageServcie.remove('nav');
+  }
 
   play(){
-    try { if (this.Song && this.Song.pause) { this.Song.pause(); } } catch(e){}
-
-    this.Song = new Audio(this.songSelected.preview_url);
-
-    this.Song.addEventListener('timeupdate', () => {
-      const current = this.Song.currentTime || 0; // seconds
-      const duration = this.Song.duration || 0; // seconds
-      this.elapsedMs = Math.floor(current * 1000);
-      this.progressValue = duration > 0 ? (current / duration) : 0;
-    });
-
-    this.Song.addEventListener('ended', () => {
-      this.songSelected.playing = false;
-      this.progressValue = 0;
-      this.elapsedMs = 0;
-    });
-
-    this.Song.play();
-    this.songSelected.playing = true;
+    this.currentSong = new Audio(this.song.preview_url);
+    this.currentSong.play();
+    this.currentSong.addEventListener("timeupdate", ()=>{
+      this.newTime = this.currentSong.currentTime / this.currentSong.duration;
+    })
+    this.song.playing = true;
   }
 
-  pause(){
-    if (this.Song && this.Song.pause) {
-      this.Song.pause();
+  pausa(){
+    this.currentSong.pause();
+    this.song.playing = false;
+  }
+
+  formatTime(seconds: number){
+    if(!seconds || isNaN(seconds)) return "0:00";
+    const minutes = Math.floor(seconds/60);
+    const remaningSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remaningSeconds.toString().padStart(2, '0')}`
+  }
+
+  toggleLike(){
+    this.liked = !this.liked;
+    if (this.liked) {
+      console.log('Canción marcada como favorita');
+    } else {
+      console.log('Favorito removido');
     }
-    this.songSelected.playing = false;
-  }
-
-  getRemainngTime(){
-    if (!this.Song.duration || !this.Song.currentTime) {
-      return '0:00';
-    }
-    const remainingTime = this.Song.duration - this.Song.currentTime;
-    return this.formatDuration(remainingTime * 1000);
-  }
-
-  formatDuration(durationMs: number): string {
-    const totalSeconds = Math.floor(durationMs / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   }
 }
-
-

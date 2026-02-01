@@ -1,71 +1,99 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="cambiarColor()">
-        <ion-icon name="color-palette"></ion-icon>
+  <ion-toolbar class="custom-toolbar">
+    <div class="toolbar-content">
+      <div class="title-section">
+        <ion-icon name="musical-notes" class="header-icon"></ion-icon>
+        <ion-title class="custom-title">Escucha tu música</ion-title>
+      </div>
+
+      <ion-button fill="clear" (click)="cambiarColor()" class="theme-toggle">
+        <ion-icon
+          [name]="modoOscuro ? 'sunny-outline' : 'moon-outline'"
+          [style.transform]="'rotate(' + rotate + 'deg)'"
+          class="toggle-icon"
+        ></ion-icon>
       </ion-button>
-      <ion-button fill="clear" (click)="cambiarTema()">
-        <ion-icon name="contrast"></ion-icon>
-      </ion-button>
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
+    </div>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [style.--background]="colorActual">
+<ion-content class="home-content">
+  <div class="content-container">
+    <div class="welcome-section">
+      <h1 class="welcome-title">Bienvenido a tu playlist</h1>
+      <p class="welcome-subtitle">disfruta tus álbumes favoritos</p>
+    </div>
 
-  @if (loaded) {
-  <swiper-container slides-per-view="2" [loop]="true" class="my-custom-swiper">
-    <swiper-slide *ngFor="let album of albums">
+    <!-- Sección Álbumes -->
+    <div class="section" *ngIf="albums && albums.length">
+      <div class="section-header">
+        <h2 class="section-title">Álbumes</h2>
+        <ion-icon name="library-outline" class="section-icon"></ion-icon>
+      </div>
+      <swiper-container class="swiper" loop="false" slides-per-view="2" space-between="16" navigation="false">
+        <swiper-slide *ngFor="let album of albums" class="card-slide" (click)="showSongs(album.id)">
+          <div class="card" [class.loading]="album.loading">
+            <div class="card-image-container">
+              <img [src]="album.image" [alt]="album.name" class="card-image" />
+              <div class="play-overlay">
+                <ion-icon name="play-circle" class="play-icon"></ion-icon>
+              </div>
+            </div>
+            <div class="info">
+              <h3 class="title">{{ album.name }}</h3>
+              <p class="subtitle">Álbum</p>
+            </div>
+          </div>
+        </swiper-slide>
+      </swiper-container>
+    </div>
 
-      <ion-card (click)="loadSongsByAlbum(album.id)" class="slide-content" [style.color]="">
-        <img class="slide-image" [src]="album.image" alt="{{ album.name }}" />
-        <ion-card-header class="ion-justify-content-start ion-no-padding ion-padding-top">
-          <ion-card-title [style.color]="colorSlideTitle">{{ album.name }}</ion-card-title>
-        </ion-card-header>
-        <ion-card-content class="card-content">{{ album.label }} - {{ album.release_date }}</ion-card-content>
-      </ion-card>
-    </swiper-slide>
-  </swiper-container>
-  }@else {
-  <ion-spinner color="medium" class="ion-margin ion-padding" style="width: 100%; height: 100px;"></ion-spinner>
-  }
+    <!-- Sección Artistas -->
+    <div class="section" *ngIf="artists && artists.length">
+      <div class="section-header">
+        <h2 class="section-title">Artistas</h2>
+        <ion-icon name="person-outline" class="section-icon"></ion-icon>
+      </div>
+      <swiper-container class="swiper" loop="false" slides-per-view="2" space-between="16" navigation="false">
+        <swiper-slide *ngFor="let artist of artists" class="card-slide" (click)="showSongsByArtists(artist.id)">
+          <div class="card" [class.loading]="artist.loading">
+            <div class="card-image-container">
+              <img [src]="artist.image" [alt]="artist.name" class="card-image" />
+              <div class="play-overlay">
+                <ion-icon name="play-circle" class="play-icon"></ion-icon>
+              </div>
+            </div>
+            <div class="info">
+              <h3 class="title">{{ artist.name }}</h3>
+              <p class="subtitle">Artista</p>
+            </div>
+          </div>
+        </swiper-slide>
+      </swiper-container>
+    </div>
 
+    <ion-footer class="music-footer">
+      <ion-grid class="time-display">
+        <ion-row>
+          <ion-col class="ion-text-start">{{ formatTime(currentSong?.currentTime) || "0:00" }}</ion-col>
+          <ion-col class="ion-text-end">{{ formatTime(currentSong?.duration) || "0:00" }}</ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-progress-bar class="player-progress-bar" [value]="newTime"></ion-progress-bar>
+      <div class="footer-controls">
+        <ion-icon
+          [name]="liked ? 'heart' : 'heart-outline'"
+          [color]="liked ? 'danger' : ''"
+          class="footer-icon heart-icon"
+          (click)="toggleLike()">
+        </ion-icon>
+        <ion-text class="footer-song-name">{{ song.name || "N/A" }}</ion-text>
+        <ion-icon
+          [name]="song.playing ? 'pause' : 'play'"
+          class="footer-icon"
+          (click)="song.playing ? pausa() : play()">
+        </ion-icon>
+      </div>
+    </ion-footer>
+  </div>
 </ion-content>
-
-
-<ion-footer>
-  <ion-grid>
-
-    <ion-row>
-      <ion-col class="ion-text-start">
-        <ion-text color="primary">
-          <p class="ion-no-margin ion-margin-start">{{formatDuration(elapsedMs) || "0:00"}}</p>
-        </ion-text>
-      </ion-col>
-      <ion-col class="ion-text-end">
-        <ion-text color="primary">
-          <p class="ion-no-margin ion-margin-end">{{getRemainngTime() || "0:00"}}</p>
-        </ion-text>
-      </ion-col>
-    </ion-row>
-
-  </ion-grid>
-  <ion-progress-bar class="ion-no-margin ion-no-padding" [value]="progressValue"></ion-progress-bar>
-  <ion-grid>
-    <ion-row class="ion-text-center ion-padding">
-      <ion-col>
-        <ion-text color="primary">
-          <h3 class="ion-no-margin ion-text-center">{{ songSelected.name || "Escucha una canción"}}</h3>
-        </ion-text>
-      </ion-col>
-      <ion-col class="ion-text-center  ion-padding">
-        <ion-icon style="font-size: 1.5em;" name="heart"></ion-icon>
-      </ion-col>
-      <ion-col class="ion-text-center ion-padding">
-        <ion-icon *ngIf="!songSelected.playing" name="play" (click)="play()"></ion-icon>
-        <ion-icon *ngIf="songSelected.playing" name="pause-outline" (click)="pause()"></ion-icon>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-footer>

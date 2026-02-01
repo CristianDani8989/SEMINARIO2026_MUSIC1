@@ -1,62 +1,105 @@
 import { Injectable } from '@angular/core';
+import { loginCredentials, registerCredentials } from '../models/auth-models';
 import { StorageService } from './storage';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  email = '';
+  password = '';
+  loggedIn = false;
+  url = 'https://music.fly.dev';
 
-  constructor(private storageService: StorageService) {}
+  constructor(private storage: StorageService, private http: HttpClient) {}
 
-  async searchUser(credentials: any): Promise<{ login: boolean; intro: boolean } | null> {
-    const user = await this.storageService.get('user');
-    if (user && user.email === credentials.email && user.password === credentials.password) {
-      return { login: true, intro: user.intro };
-    }
-    return null;
+  async loadStorageData() {
+    const [savedEmail, savedPassword] = await Promise.all([
+      this.storage.get('email'),
+      this.storage.get('password'),
+    ]);
+    this.email = savedEmail || '';
+    this.password = savedPassword || '';
   }
 
-  async loginUser(credentials: any) {
-    return new Promise(async (accept, reject) => {
-      const result = await this.searchUser(credentials);
-      if (result) {
-        await this.storageService.set('login', result.login);
-        await this.storageService.set('intro', result.intro);
-        accept('login correcto');
-      } else {
-        reject('login incorrecto');
-      }
-    });
-  }
-
-  register(userData: any) {
-    return {
-      subscribe: async ({ next, error }: any) => {
-        if (userData.email && userData.password) {
-
-          const user = { ...userData, intro: false };
-          await this.storageService.set('user', user);
-          await this.storageService.set('intro', false);
-          next({
-            success: true,
-            message: 'Usuario registrado correctamente'
-          });
-        } else {
-          next({
-            success: false,
-            message: 'Datos inválidos: ' + error
-          });
-        }
+  async loginUser(credentials: loginCredentials) {
+    const body = {
+      user: {
+        email: credentials.email,
+        password: credentials.password
       }
     };
+    try {
+      const response: any = await firstValueFrom(this.http.post(this.url + '/login', body));
+      if (response && response.status === 'OK') {
+        await this.storage.set('login', true);
+        await this.storage.set('user', response.user);
+        await this.storage.set('email', credentials.email);
+        await this.storage.set('password', credentials.password);
+        console.log('Login successful:', response);
+        return response;
+      } else {
+        throw new Error(response?.msg || 'Login Incorrecto');
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      const errorMessage = error?.error?.msg || error?.message || 'Error al iniciar sesión';
+      throw new Error(errorMessage);
+    }
+  }
+
+  async registerUser(credentials: registerCredentials) {
+    const body = {
+      user: {
+        email: credentials.email,
+        password: credentials.password,
+        name: credentials.name,
+        last_name: credentials.last_name
+      }
+    };
+    try {
+      const response: any = await firstValueFrom(
+        this.http.post(this.url + '/signup', body)
+      );
+      
+      if (response && response.status === 'OK') {
+        console.log('Registration successful:', response);
+        return response;
+      } else {
+        throw new Error(response?.msg || 'Error en el registro');
+      }
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      
+      let errorMessage = 'ojo con eso';
+      
+      if (error?.error?.msg) {
+        errorMessage = error.error.msg;
+      } else if (error?.error?.errors) {
+        const errors = error.error.errors;
+        errorMessage = Object.values(errors).join(', ');
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      throw new Error(errorMessage);
+    }
+  }
+
+  async isAuthenticated(): Promise<boolean> {
+    const loginStatus = await this.storage.get('login');
+    return loginStatus === true;
+  }
+
+  async logout() {
+    await this.storage.remove('login');
+    await this.storage.remove('user');
+    await this.storage.remove('email');
+    await this.storage.remove('password');
+    console.log('Logout successful');
   }
 }
 
-// crear pagina de registro
-// vamos a crear formulario reactivo (nombre,apellido,email,contraseña)
-// crear un servicio que reciba los datos ingresados
-// si el servicio devuelve accep, navegar hacia login y guardar los datos del registro en el stroge
-// validaciones (mensajes de error)
-// se habilite el boton de registro si todo el formulario esta correcto
-// un boton para volver a login *em login un boton que me lleve a la pagina de registro
-// si no que muestre el mensaje de error si el registro no fue existoso
+export { loginCredentials, registerCredentials };
