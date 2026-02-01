@@ -1,37 +1,34 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavParams, IonicModule, ModalController} from '@ionic/angular';
+import { IonicModule, NavParams, ModalController } from '@ionic/angular';
 
 @Component({
-  selector: 'app-songs-modal',
+  selector: 'app-song-modal',
   templateUrl: './songs-modal.page.html',
   styleUrls: ['./songs-modal.page.scss'],
   standalone: true,
-  imports:[ CommonModule, FormsModule, IonicModule]
+  imports: [IonicModule, CommonModule, FormsModule]
 })
-export class SongsModalPage implements OnInit {
+export class SongModalPage implements OnInit {
+  songs: any;
 
-  songs: any[] = [];
-  loaded:boolean = false;
-  constructor(private navParams: NavParams, private modalController: ModalController) {}
+  constructor(
+    private navParams: NavParams, 
+    private modalCtrl: ModalController
+  ) { }
 
   ngOnInit() {
     this.songs = this.navParams.data['songs'];
-    this.loaded = true;
+    console.log('Songs received in modal:', this.songs);
+  }
+
+  async closeModal() {
+    await this.modalCtrl.dismiss();
   }
 
   async selectSong(song: any) {
-    await this.modalController.dismiss(song);
-    
+    console.log("cancion seleccionada: ", song);
+    await this.modalCtrl.dismiss(song)
   }
-
-  formatDuration(durationMs: number | null | undefined): string {
-    if (durationMs === null || durationMs === undefined) return '';
-    const totalSeconds = Math.floor(durationMs / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  }
-
 }

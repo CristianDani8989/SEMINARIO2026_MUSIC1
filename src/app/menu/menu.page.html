@@ -1,19 +1,22 @@
 <ion-split-pane contentId="main-content">
-  <ion-menu contentId="main-content" side="end" type="push">
+  <ion-menu contentId="main-content">
     <ion-header>
       <ion-toolbar>
-         <ion-menu-toggle>  <ion-icon name="close-circle-outline"> </ion-icon></ion-menu-toggle>
-        <ion-title> Menu </ion-title>
+        <ion-menu-toggle slot="start">
+          <ion-icon name="close-outline"></ion-icon>
+        </ion-menu-toggle>
+        <ion-title>Menu</ion-title>
+        <ion-icon
+          name="log-out-outline"
+          slot="end"
+          (click)="logOut()"
+        ></ion-icon>
       </ion-toolbar>
     </ion-header>
     <ion-content>
       <ion-list>
-         <!-- agregar cerrar sesion (me redicconara a login, y borrara del storage que ya estoy logueado) [LISTA] --> 
-        <ion-item (click)="goToIntro()"> Ver la intro </ion-item>
+        <ion-item>Opcion 1</ion-item>
       </ion-list>
-      <ion-item button (click)="cerrarSesion()">
-          <ion-label>Cerrar Sesión</ion-label>
-      </ion-item>
     </ion-content>
   </ion-menu>
   <ion-router-outlet id="main-content"></ion-router-outlet>

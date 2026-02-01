@@ -1,41 +1,25 @@
-  <ion-header>
-    <ion-toolbar>
-      <ion-buttons class="ion-margin-end" slot="end">
-        <ion-menu-button ></ion-menu-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Intro</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-<ion-content>
+<ion-content class="intro-content">
+  <div class="intro-container">
+    <swiper-container #swiper pagination="true" slides-per-view="1" loop="false">
+      <swiper-slide *ngFor="let slide of introSlides">
+        <div class="intro-slide">
+          <h2 class="intro-title">{{ slide.title }}</h2>
+          <img class="intro-image" [src]="slide.image" [alt]="slide.title" />
+          <p class="intro-description">{{ slide.description }}</p>
+        </div>
+      </swiper-slide>
+    </swiper-container>
 
-  <swiper-container
-    pagination="true"
-    slides-per-view="1"
-  >
-
-    <swiper-slide *ngFor="let genre of genres; let i = index">
-
-      <div class="slide-container ion-text-center" [ngClass]="colorActual">
-
-        <img *ngIf="genre.image" [src]="genre.image" />
-
-        <h2>{{ genre.title }}</h2>
-        <p>{{ genre.description }}</p>
-
-        <!-- BOTÓN SOLO EN EL ÚLTIMO SLIDE -->
-        <ion-button
-          *ngIf="i === genres.length - 1"
-          shape="round"
-          expand="block"
-          (click)="goBack()"
-        >
-          Ir al Home
-        </ion-button>
-
-      </div>
-
-    </swiper-slide>
-
-  </swiper-container>
-
+    <div class="intro-footer">
+      <ion-button class="intro-btn" expand="block" (click)="nextSlide(swiper)">
+        {{ getCurrentSlide() === introSlides.length - 1 ? 'Empezar' : 'Siguiente' }}
+      </ion-button>
+    </div>
+  </div>
 </ion-content>

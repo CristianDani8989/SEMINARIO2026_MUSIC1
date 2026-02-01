@@ -39,6 +39,6 @@ export const routes: Routes = [
   },
   {
     path: 'song-modal',
-    loadComponent: () => import('./songs-modal/songs-modal.page').then( m => m.SongsModalPage)
+    loadComponent: () => import('./songs-modal/songs-modal.page').then( m => m.SongModalPage)
   },
 ];

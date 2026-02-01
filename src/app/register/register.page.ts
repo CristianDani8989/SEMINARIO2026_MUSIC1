@@ -1,144 +1,176 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-
 import {
-  IonicModule,
-  LoadingController,
-  AlertController,
-  ToastController
-} from '@ionic/angular';
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { RouterModule } from '@angular/router';
+
+import { IonicModule, NavController, ToastController } from '@ionic/angular';
 
 import { AuthService } from '../services/auth';
+import { StorageService } from '../services/storage';
+import { registerCredentials } from '../services/auth';
+
+const VALIDATOR_MESSAGES: Record<string, { type: string; message: string }[]> =
+  {
+    name: [{ type: 'required', message: 'Nombre obligatorio' }],
+    apellido: [{ type: 'required', message: 'Apellido obligatorio' }],
+    email: [
+      { type: 'required', message: 'Email obligatorio' },
+      { type: 'email', message: 'Email no válido' },
+    ],
+    password: [
+      { type: 'required', message: 'Password obligatorio' },
+      {
+        type: 'minlength',
+        message: 'La contraseña no puede ser menor a 8 caracteres',
+      },
+    ],
+  };
 
 @Component({
   selector: 'app-register',
-  standalone: true, 
-  imports: [
-    CommonModule,
-    IonicModule,            
-    ReactiveFormsModule
-  ],
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
+  standalone: true,
+  imports: [
+    IonicModule,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+  ],
 })
 export class RegisterPage implements OnInit {
-
   registerForm!: FormGroup;
-  showPassword = false;
-
-  validation_messages = {
-    nombre: [
-      { type: 'required', message: 'El nombre es requerido.' },
-      { type: 'minlength', message: 'El nombre debe tener al menos 2 caracteres.' }
-    ],
-    apellido: [
-      { type: 'required', message: 'El apellido es requerido.' },
-      { type: 'minlength', message: 'El apellido debe tener al menos 2 caracteres.' }
-    ],
-    email: [
-      { type: 'required', message: 'El email es requerido.' },
-      { type: 'email', message: 'Ingresa un email válido.' }
-    ],
-    password: [
-      { type: 'required', message: 'La contraseña es requerida.' },
-      { type: 'minlength', message: 'La contraseña debe tener al menos 6 caracteres.' }
-    ]
-  };
+  showPassword: boolean = false;
+  errorMessage: any = '';
 
   constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-    private loadingCtrl: LoadingController,
-    private alertCtrl: AlertController,
-    private toastCtrl: ToastController
+    private readonly formBuilder: FormBuilder,
+    private readonly toastController: ToastController,
+    private readonly authService: AuthService,
+    private readonly navCtrl: NavController,
+    private readonly storageService: StorageService
   ) {}
 
   ngOnInit() {
-    this.registerForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(2)]],
-      apellido: ['', [Validators.required, Validators.minLength(2)]],
+    this.initializeForm();
+  }
+
+  private initializeForm() {
+    this.registerForm = this.formBuilder.group({
+      name: ['', [Validators.required]],
+      apellido: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
     });
+  }
+
+  goToLogin() {
+    this.navCtrl.navigateBack('/login');
+  }
+
+  hasError(field: string): boolean {
+    const control = this.registerForm.get(field);
+    return !!(control && control.invalid && control.touched);
+  }
+
+  getErrorMessage(field: string): string {
+    const control = this.registerForm.get(field);
+    if (!control || !control.touched || control.valid) return '';
+
+    const error = VALIDATOR_MESSAGES[field]?.find((v) =>
+      control.hasError(v.type)
+    );
+    
+    return error?.message || '';
   }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
 
-  hasError(field: string): boolean {
+  async presentToast(field: string) {
     const control = this.registerForm.get(field);
-    return !!(control && control.errors && control.touched);
+    if (!control || !control.touched || control.valid) return;
+
+    const error = VALIDATOR_MESSAGES[field].find((v) =>
+      control.hasError(v.type)
+    );
+    if (!error) return;
+
+    const toast = await this.toastController.create({
+      message: error.message,
+      duration: 1500,
+      position: 'bottom',
+      color: 'danger',
+    });
+
+    await toast.present();
   }
 
-getErrorMessage(field: 'nombre' | 'apellido' | 'email' | 'password'): string {
-  const control = this.registerForm.get(field);
+  async register() {
+    Object.keys(this.registerForm.controls).forEach(key => {
+      this.registerForm.get(key)?.markAsTouched();
+    });
 
-  if (control && control.errors && control.touched) {
-    const messages = this.validation_messages[field];
-
-    for (const error of messages) {
-      if (control.errors[error.type]) {
-        return error.message;
-      }
-    }
-  }
-
-  return '';
-}
-
-  async onRegister() {
-    if (!this.registerForm.valid) {
-      Object.values(this.registerForm.controls).forEach(c => c.markAsTouched());
+    if (this.registerForm.invalid) {
+      const toast = await this.toastController.create({
+        message: 'Por favor completa todos los campos correctamente',
+        duration: 2000,
+        position: 'bottom',
+        color: 'danger',
+      });
+      await toast.present();
       return;
     }
 
-    const loading = await this.loadingCtrl.create({
-      message: 'Creando cuenta...',
-      spinner: 'crescent'
-    });
-    await loading.present();
+    const credentials: registerCredentials = {
+      name: this.registerForm.value.name,
+      last_name: this.registerForm.value.apellido,
+      email: this.registerForm.value.email,
+      password: this.registerForm.value.password,
+    };
 
-    this.authService.register(this.registerForm.value).subscribe({
-      next: async (res: { success: boolean; message: string }) => {
-        await loading.dismiss();
-
-        if (res.success) {
-          const alert = await this.alertCtrl.create({
-            header: 'Registro exitoso',
-            message: res.message,
-            buttons: [{
-              text: 'OK',
-              handler: () => this.router.navigate(['/login'])
-            }]
-          });
-          await alert.present();
-        } else {
-          const alert = await this.alertCtrl.create({
-            header: 'Error',
-            message: res.message,
-            buttons: ['OK']
-          });
-          await alert.present();
-        }
-      },
-      error: async () => {
-        await loading.dismiss();
-        const alert = await this.alertCtrl.create({
-          header: 'Error',
-          message: 'Error inesperado',
-          buttons: ['OK']
-        });
-        await alert.present();
-      }
-    });
+    await this.registerUser(credentials);
   }
 
-  goToLogin() {
-    this.router.navigate(['/login']);
+  async registerUser(credentials: registerCredentials) {
+    try {
+      const response = await this.authService.registerUser(credentials);
+
+      await this.storageService.set('name', credentials.name);
+      await this.storageService.set('last_name', credentials.last_name);
+      await this.storageService.set('email', credentials.email);
+      await this.storageService.set('registered', true);
+
+      const toast = await this.toastController.create({
+        message: '¡Registro exitoso!',
+        duration: 2000,
+        position: 'bottom',
+        color: 'success',
+      });
+      await toast.present();
+
+      this.navCtrl.navigateForward('/login');
+      
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Error al registrar, valida';
+      
+      await this.storageService.set('registered', false);
+
+      const toast = await this.toastController.create({
+        message: this.errorMessage,
+        duration: 3000,
+        position: 'bottom',
+        color: 'danger',
+      });
+      await toast.present();
+    }
   }
 }
-

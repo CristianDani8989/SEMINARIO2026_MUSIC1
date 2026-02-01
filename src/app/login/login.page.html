@@ -1,48 +1,98 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Login</ion-title>
+    <ion-title>Iniciar Sesión</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <figure class="profile-default-image ion-text-center">
-    <p>Ingresa tus datos</p>
-    <img src="assets/imagenes/Usuario.jpg">
-  </figure>
-  <form [formGroup]="loginForm" (ngSubmit)="loginUser(loginForm.value)">
-    <ion-item>
-      <ion-input label="Email" labelPlacement="stacked" placeholder="escribe aqui compae" formControlName="email" ></ion-input>
-    </ion-item>
-    <div>  <!-- TAREA: utilirzar para darle estilo a como muestra el mensaje [LISTA] -->  
-      <ng-container *ngFor="let validation of validation_message.email">
-        <div 
-        class="error-message"
-        *ngIf="(loginForm.get('email')?.hasError(validation.type) && loginForm.get('email')?.dirty)"
-        >{{validation.message}}</div>
-      </ng-container>
-    </div> <!-- TAREA: mostrar el mensaje de error en la validacion del campo de password [LISTA] -->
-    <ion-item>
-      <!-- TAREA: cambiar input a paswword [LISTA]-->
-     <ion-input type="password" label="Contraseña" labelPlacement="stacked" placeholder="escribe aqui tu contra" formControlName="password"> </ion-input>
-    </ion-item>
-<div>
-  <ng-container *ngFor="let validation of validation_message.password">
-    <div
-      class="error-message"
-      *ngIf="loginForm.get('password')?.hasError(validation.type) && loginForm.get('password')?.dirty">
-      {{ validation.message }}
+<ion-content class="login-content">
+  <div class="login-container">
+    <!-- Header Section -->
+    <div class="header-section">
+      <div class="logo-container">
+        <ion-icon name="musical-notes" class="logo-icon"></ion-icon>
+      </div>
+      <h1 class="welcome-title">Bienvenido</h1>
+      <p class="welcome-subtitle">Inicia sesión para continuar</p>
     </div>
-  </ng-container>
-</div>
-  <ion-button expand="full" shape="round" color="success" [disabled]="!loginForm.valid" type="submit">
-      Login
-  </ion-button>
-  <ion-button
-  expand="full"
-  fill="outline"
-  color="primary"
-  (click)="goToRegister()"> Crear cuenta
-</ion-button>
-  </form>
-  {{errorMessage}}
+
+    <!-- Form Section -->
+    <div class="form-section">
+      <form [formGroup]="loginForm" (ngSubmit)="loginUser(loginForm.value)">
+        <div class="input-group">
+          <ion-item lines="none" class="custom-input">
+            <ion-icon
+              name="mail-outline"
+              slot="start"
+              class="input-icon"
+            ></ion-icon>
+            <ion-input
+              type="email"
+              placeholder="Correo electrónico"
+              formControlName="email"
+              (ionBlur)="presentToast('email')"
+              class="input-field"
+            ></ion-input>
+          </ion-item>
+        </div>
+
+        <div class="input-group">
+          <ion-item lines="none" class="custom-input">
+            <ion-icon
+              name="lock-closed-outline"
+              slot="start"
+              class="input-icon"
+            ></ion-icon>
+            <ion-input
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Contraseña"
+              formControlName="password"
+              (ionBlur)="presentToast('password')"
+              class="input-field"
+            ></ion-input>
+            <ion-button
+              fill="clear"
+              slot="end"
+              (click)="togglePassword()"
+              class="password-toggle"
+            >
+              <ion-icon
+                [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+                class="toggle-icon"
+              ></ion-icon>
+            </ion-button>
+          </ion-item>
+        </div>
+
+        <ion-button
+          expand="block"
+          type="submit"
+          [disabled]="loginForm.invalid"
+          class="login-btn"
+        >
+          <ion-icon name="log-in-outline" slot="start"></ion-icon>
+          Iniciar Sesión
+        </ion-button>
+      </form>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="footer-section">
+      <div class="divider">
+        <span class="divider-text">o</span>
+      </div>
+
+      <div class="register-section">
+        <p class="register-text">¿No tienes cuenta?</p>
+        <ion-button
+          fill="outline"
+          expand="block"
+          routerLink="/register"
+          class="register-btn"
+        >
+          <ion-icon name="person-add-outline" slot="start"></ion-icon>
+          Crear cuenta
+        </ion-button>
+      </div>
+    </div>
+  </div>
 </ion-content>

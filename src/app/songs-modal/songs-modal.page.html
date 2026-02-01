@@ -1,16 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Escoge tu cancion</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">  
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
-<ion-content >
-  <ion-header>
-    <ion-toolbar>
-      <ion-title class="ion-text-center">Songs Modal</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-item class="ion-margin" *ngFor="let song of songs; let i = index" (click)="selectSong(song)">
-    <ion-thumbnail slot="start">
-      <ion-icon class="musical-notes" name="musical-notes"></ion-icon>
-    </ion-thumbnail>
-    <ion-label>
-      <h3>{{ song.name }}</h3>
-    </ion-label>
-  </ion-item>
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let song of songs" button (click)="selectSong(song)">
+      <ion-thumbnail slot="start" *ngIf="song.image">
+        <img [src]="song.image" [alt]="song.name" />
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ song.name }}</h2>
+        <p>{{ song.artist || 'Artista desconocido' }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  
+  <div *ngIf="!songs || songs.length === 0" class="empty-state">
+    <ion-icon name="musical-notes-outline" size="large"></ion-icon>
+    <p>No hay canciones disponibles</p>
+  </div>
 </ion-content>

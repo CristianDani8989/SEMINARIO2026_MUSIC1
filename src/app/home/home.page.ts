@@ -5,7 +5,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { StorageService } from 'src/app/services/storage';
 import { Router } from '@angular/router';
 import { MusicService } from 'src/app/services/music';
-import { SongsModalPage } from '../songs-modal/songs-modal.page';
+import { SongModalPage } from '../songs-modal/songs-modal.page';
 
 @Component({
   selector: 'app-home',
@@ -89,7 +89,7 @@ export class HomePage implements OnInit {
     const songs = await this.musicService.getSongsByAlbum(albumId);
     console.log('Songs for album:', songs);
     const modal = await this.modalController.create({
-      component: SongsModalPage,
+      component: SongModalPage,
       componentProps: {
         songs: songs,
       } ,
@@ -106,7 +106,7 @@ export class HomePage implements OnInit {
   async showSongsByArtists(songId: string) {
     const song = await this.musicService.getSongsByArtists(songId);
     const modal = await this.modalController.create({
-      component: SongsModalPage,
+      component: SongModalPage,
       componentProps: {
         songs: song,
       },

@@ -10,8 +10,10 @@
   padding: 20px;
   max-width: 400px;
   margin: 0 auto;
+  animation: fadeInUp 0.6s ease-out;
 }
 
+/* Header */
 .header-section {
   text-align: center;
   margin-bottom: 30px;
@@ -57,6 +59,7 @@
   font-weight: 300;
 }
 
+/* Form */
 .register-form {
   margin-bottom: 20px;
 }
@@ -75,11 +78,16 @@
   --min-height: 48px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  
-  &.error-input {
-    --border-color: #921515;
-    border-color: #ff6b6b;
-  }
+  transition: all 0.3s ease;
+}
+
+.custom-input.error-input {
+  border-color: #ff6b6b;
+}
+
+.custom-input:focus-within {
+  border-color: rgba(255, 255, 255, 0.5);
+  --background: rgba(255, 255, 255, 0.15);
 }
 
 .input-icon {
@@ -111,6 +119,7 @@
   font-weight: 500;
 }
 
+/* Buttons */
 .register-button {
   --background: rgba(255, 255, 255, 0.2);
   --color: #ffffff;
@@ -121,25 +130,26 @@
   font-weight: 600;
   font-size: 1rem;
   margin-top: 10px;
-  
-  &:disabled {
-    --background: rgba(255, 255, 255, 0.1);
-    --color: rgba(255, 255, 255, 0.5);
-  }
 }
 
+.register-button:disabled {
+  --background: rgba(255, 255, 255, 0.1);
+  --color: rgba(255, 255, 255, 0.5);
+}
+
+/* Divider */
 .divider {
   display: flex;
   align-items: center;
   margin: 20px 0;
-  
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.3);
-  }
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .divider-text {
@@ -149,6 +159,7 @@
   font-size: 0.9rem;
 }
 
+/* Login Button */
 .login-button {
   --color: #ffffff;
   --border-color: rgba(255, 255, 255, 0.5);
@@ -157,17 +168,13 @@
   --padding-bottom: 12px;
   font-weight: 600;
   font-size: 1rem;
-  
-  &:hover {
-    --background: rgba(255, 255, 255, 0.1);
-  }
 }
 
-// Animaciones
-.register-container {
-  animation: fadeInUp 0.6s ease-out;
+.login-button:hover {
+  --background: rgba(255, 255, 255, 0.1);
 }
 
+/* Animations */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -179,30 +186,20 @@
   }
 }
 
-// Estados de validación
-.custom-input {
-  transition: all 0.3s ease;
-  
-  &:focus-within {
-    border-color: rgba(255, 255, 255, 0.5);
-    --background: rgba(255, 255, 255, 0.15);
-  }
-}
-
-
+/* Responsive */
 @media (max-width: 480px) {
   .register-container {
     padding: 15px;
   }
-  
+
   .page-title {
     font-size: 1.8rem;
   }
-  
+
   .logo-icon {
     font-size: 2rem;
   }
-  
+
   .input-group {
     margin-bottom: 14px;
   }
@@ -213,11 +210,11 @@
     justify-content: flex-start;
     padding-top: 40px;
   }
-  
+
   .header-section {
     margin-bottom: 20px;
   }
-  
+
   .logo-container {
     margin-top: 20px;
   }
